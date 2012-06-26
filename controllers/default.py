@@ -19,7 +19,7 @@ def index():
         _class='front-menu'))
     else:
         if not db(db.auth_user.id>0).count():
-            message = T('Web2postfix is a lightweight web tool to manage virtual mail address with postfix and dovecot. Please register the first administrator. He/she will able to add further users once logged in.')
+            message = T('Web2postfix is a lightweight web tool to manage virtual mail address with postfix and dovecot. Please register the first administrator. He/she will be able to add further users once logged in.')
             form = auth.register()
         else:
             message = T('Web2postfix is a lightweight web tool to manage virtual mail address with postfix and dovecot. Additional users must be registered by an existing administrator. Please log in.')

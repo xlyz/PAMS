@@ -1,0 +1,37 @@
+{{left_sidebar_enabled,right_sidebar_enabled=False,False}}
+{{extend 'layout.html'}}
+
+<h3>{{=T('Postfix setup')}}</h3>
+
+<ol>
+<li>{{=T('Copy the following files to your postfix configuration directory (usually /etc/postfix)')}}:
+
+{{=TABLE(
+    TR(TD(A('sqlite_virtual_mailbox_maps.cf',_HREF=URL('static','sqlite/sqlite_virtual_mailbox_maps.cf'))),
+      TD(A(T('download'),_HREF=URL('static','sqlite/sqlite_virtual_mailbox_maps.cf?attachment', url_encode=False)))),
+    TR(TD(A('sqlite_virtual_mail_alias_maps.cf',_HREF=URL('static','sqlite/sqlite_virtual_mail_alias_maps.cf'))),
+      TD(A(T('download'),_HREF=URL('static','sqlite/sqlite_virtual_mail_alias_maps.cf?attachment', url_encode=False)))),
+    TR(TD(A('sqlite_virtual_domains_maps.cf',_HREF=URL('static','sqlite/sqlite_virtual_domains_maps.cf'))),
+      TD(A(T('download'),_HREF=URL('static','sqlite/sqlite_virtual_domains_maps.cf?attachment', url_encode=False)))),
+    TR(TD(A('sqlite_virtual_alias_domain_mailbox_maps.cf',_HREF=URL('static','sqlite/sqlite_virtual_alias_domain_mailbox_maps.cf'))),
+      TD(A(T('download'),_HREF=URL('static','sqlite/sqlite_virtual_alias_domain_mailbox_maps.cf?attachment', url_encode=False)))),
+    TR(TD(A('sqlite_virtual_domain_alias_maps.cf',_HREF=URL('static','sqlite/sqlite_virtual_domain_alias_maps.cf'))),
+      TD(A(T('download'),_HREF=URL('static','sqlite/sqlite_virtual_domain_alias_maps.cf?attachment', url_encode=False)))),
+    TR(TD(A('sqlite_virtual_mailbox_limit_maps.cf',_HREF=URL('static','sqlite/sqlite_virtual_mailbox_limit_maps.cf'))),
+      TD(A(T('download'),_HREF=URL('static','sqlite/sqlite_virtual_mailbox_maps.cf?attachment', url_encode=False)))),
+    TR(TD(A('sqlite_virtual_domain_alias_catchall_maps.cf',_HREF=URL('static','sqlite/sqlite_virtual_domain_alias_catchall_maps.cf'))),
+      TD(A(T('download'),_HREF=URL('static','sqlite/sqlite_virtual_domain_alias_catchall_maps.cf?attachment', url_encode=False)))),
+    )}}</li>
+
+<li>{{=T('Edit each file and point dbpath to the sqlite db of web2postfix (usually databases/storage.sqlite in the web2postfix directory).')}}</li>
+
+<li>{{=T('Modify postfix config as follows:')}}
+    {{=UL("virtual_mailbox_domains = proxy:sqlite:/etc/postfix/sqlite_virtual_domains_maps.cf",
+    "virtual_mailbox_maps = proxy:sqlite:/etc/postfix/sqlite_virtual_mailbox_maps.cf, proxy:sqlite:/etc/postfix/sqlite_virtual_alias_domain_mailbox_maps.cf",
+    "virtual_alias_maps = proxy:sqlite:/etc/postfix/sqlite_virtual_mail_alias_maps.cf, proxy:sqlite:/etc/postfix/sqlite_virtual_domain_alias_maps.cf, proxy:sqlite:/postfix/sql/sqlite_virtual_domain_alias_catchall_maps.cf",
+    "virtual_mailbox_base = /var/vmail","virtual_uid_maps = static:5000","virtual_gid_maps = static:5000")}}
+    {{=T("Virtual mailbox base can be set to the directory you feel better suited for this task. Uid and gid shall match that of the vmail user/group.")}}
+</li>
+<li>{{=T('Complete postfix configuration as needed.')}}
+</li>
+</ol>

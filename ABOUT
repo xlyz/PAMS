@@ -1,0 +1,9 @@
+
+
+Web2postfix is a lightweight web tool to manage virtual mail address with
+postfix and dovecot.
+
+It's an application for web2py.
+
+Copyright (c) 2012 xlyz (xlyz@tiscali.it)
+

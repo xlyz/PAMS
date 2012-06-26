@@ -1,0 +1,11 @@
+{{left_sidebar_enabled,right_sidebar_enabled=False,False}}
+{{extend 'layout.html'}}
+
+<h3>{{=T('Documentation')}}</h3>
+
+<p>{{=T('Web2postfix is a lightweight web tool to manage virtual mail address with postfix and dovecot.')}}<br>
+  {{=T("It's best suited for small deployment, where tools like postfixadmin and its dependencies are overkill.")}}<br>
+  {{=T('Web2postfix is based on web2py and sqlite and has its own web server embedded.')}}
+</p>
+
+{{=MENU(response.menu[1][3])}}

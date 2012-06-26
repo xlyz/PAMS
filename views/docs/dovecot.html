@@ -1,0 +1,23 @@
+{{left_sidebar_enabled,right_sidebar_enabled=False,False}}
+{{extend 'layout.html'}}
+
+<h3>{{=T('Dovecot setup')}}</h3>
+
+<ol>
+<li>{{=T('Copy the following files to your dovecot configuration directory')}}:
+
+{{=TABLE(
+    TR(TD(A('dovecot-sqlite.conf.ext',_HREF=URL('static','sqlite/dovecot-sqlite.conf.ext'))),
+      TD(A(T('download'),_HREF=URL('static','sqlite/dovecot-sqlite.conf.ext?attachment', url_encode=False))), TD(T('in /etc/dovecot'))),
+    TR(TD(A('auth-dovecot-sqlite.conf.ext',_HREF=URL('static','sqlite/auth-dovecot-sqlite.conf.ext'))),
+      TD(A(T('download'),_HREF=URL('static','sqlite/auth-dovecot-sqlite.conf.ext?attachment', url_encode=False))), TD(T('in /etc/dovecot/conf.d'))),
+    )}}</li>
+
+<li>{{=T('Modify dovecot configuration as follows:')}}
+    {{=UL("Add !include auth-dovecot-sqlite.conf.ext in /etc/dovecot/conf.d/10-auth.conf (and comment or remove any other include)",
+    "Change mail_location to maildir:/var/vmail/%u in /etc/dovecot/conf.d/01-mail-stack-delivery.conf and in /etc/dovecot/conf.d/10-mail.conf","","")}}
+    {{=T("Please check that mail_location fits with configuration settings of postfix and sqlite queries.")}}
+</li>
+<li>{{=T('Complete dovecot configuration as needed.')}}
+</li>
+</ol>

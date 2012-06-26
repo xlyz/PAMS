@@ -1,0 +1,24 @@
+{{left_sidebar_enabled,right_sidebar_enabled=False,False}}
+{{extend 'layout.html'}}
+
+<h3>{{=T('Setup')}}</h3>
+
+<p>{{=T('This guide show how to setup web2postfix with postfix and dovecot in Ubuntu 12.04 LTS.')}}
+<ol>
+  <li>{{=T('If you are reading this web2postfix has already been installed. In case of need you can refer to the installation section in the README file.')}}</li>
+  <li>{{=T('Install postfix, dovecot and sqlite:')}} <br><em>
+     {{=CODE('sudo aptitude install postfix dovecot-imapd dovecot-postfix dovecot-sqlite', language='bash', counter='#')}}</li>
+  <li>{{=T('Create a virtual group and user owner of the mail boxes:')}}<br>
+     {{=CODE('sudo addgroup --gid 5000 vmail', language='bash', counter='#')}}
+     {{=CODE('sudo useradd -g vmail -u 5000 vmail -d /home/vmail -m', language='bash', counter='#')}}
+     </li>
+  <li>{{=XML(T('Follow %s and %s guides to complete setup') % (A('postfix', _href=URL(f='docs', args=['postfix'])), A('dovecot', _href=URL(f='docs', args=['dovecot'])),))}}</li>
+</ol>
+<p>{{=T('To clean your url and open web2postfix directly add a file routes.py in your web2py directory with this content:')}}
+{{=CODE('''#!/usr/bin/python
+# -*- coding: utf-8 -*-
+routers = dict(
+  BASE = dict(
+        default_application='web2postfix',
+    ) 
+)''')}}

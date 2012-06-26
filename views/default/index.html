@@ -1,0 +1,14 @@
+{{left_sidebar_enabled,right_sidebar_enabled=False,False}}
+{{extend 'layout.html'}}
+
+{{if 'title' in globals():}}
+<h3 class="title">{{=title}}</h3>
+{{pass}}
+
+{{if 'message' in globals():}}
+<div class="message">{{=message}}</div>
+{{pass}}
+
+{{if 'form' in globals():}}
+<div>{{=form}}</div>
+{{pass}}

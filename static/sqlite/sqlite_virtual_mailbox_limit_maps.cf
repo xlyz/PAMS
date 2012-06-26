@@ -1,0 +1,9 @@
+#
+# sqlite config file for virtual mailboxes(5) quota lookups
+#
+
+# Path to sqlite db
+dbpath = /path/to/web2postfix/databases/storage.sqlite
+
+query = SELECT quota FROM mailbox WHERE mail_address='%s' AND active = '1'
+

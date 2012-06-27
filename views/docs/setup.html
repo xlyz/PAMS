@@ -9,8 +9,8 @@
   <li>{{=T('Install postfix, dovecot and sqlite:')}} <br><em>
      {{=CODE('sudo aptitude install postfix dovecot-imapd dovecot-postfix dovecot-sqlite', language='bash', counter='#')}}</li>
   <li>{{=T('Create a virtual group and user owner of the mail boxes:')}}<br>
-     {{=CODE('sudo addgroup --gid 5000 vmail', language='bash', counter='#')}}
-     {{=CODE('sudo useradd -g vmail -u 5000 vmail -d /home/vmail -m', language='bash', counter='#')}}
+     {{=CODE('''sudo addgroup --gid 5000 vmail'
+sudo useradd -g vmail -u 5000 vmail -d /home/vmail -m''', language='bash', counter='#')}}
      </li>
   <li>{{=XML(T('Follow %s and %s guides to complete setup') % (A('postfix', _href=URL(f='docs', args=['postfix'])), A('dovecot', _href=URL(f='docs', args=['dovecot'])),))}}</li>
 </ol>

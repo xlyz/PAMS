@@ -49,6 +49,12 @@ db.define_table('mailbox',
     )
 db.mailbox.username.requires=IS_NOT_IN_DB(db(db.mailbox.domain==request.vars.domain), 'mailbox.username', error_message=T('this mail address is already present'))
 
+def mail_passwd(form):
+    if form.vars.password:
+       import crypt, random
+       salt = ''.join(random.choice('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') for i in range(8))
+       form.vars.password = crypt.crypt(form.vars.password,'$6$'+salt+'$')
+
 ''' coming soon ...
     Field('quota','integer', notnull=True, default=settings.quota),
 '''

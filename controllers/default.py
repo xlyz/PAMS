@@ -124,6 +124,7 @@ def mailbox():
          details=True,
          create=True,
          csv=False,
+         onvalidation=mail_passwd,
          paginate=20,
          ))
 

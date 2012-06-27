@@ -10,7 +10,7 @@ connect = /path/to/web2postfix/databases/storage.sqlite
 # Default password scheme - list of supported schemes is in:
 # http://wiki2.dovecot.org/Authentication/PasswordSchemes
 
-default_pass_scheme = MD5
+default_pass_scheme = MD5-CRYPT
 
 # passdb query to retrieve the password:
 password_query = SELECT mail_address AS user,password FROM mailbox \

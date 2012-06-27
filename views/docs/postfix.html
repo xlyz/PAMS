@@ -26,10 +26,10 @@
 <li>{{=T('Edit each file and point dbpath to the sqlite db of web2postfix (usually databases/storage.sqlite in the web2postfix directory).')}}</li>
 
 <li>{{=T('Modify postfix config as follows:')}}
-    {{=UL("virtual_mailbox_domains = proxy:sqlite:/etc/postfix/sqlite_virtual_domains_maps.cf",
-    "virtual_mailbox_maps = proxy:sqlite:/etc/postfix/sqlite_virtual_mailbox_maps.cf, proxy:sqlite:/etc/postfix/sqlite_virtual_alias_domain_mailbox_maps.cf",
-    "virtual_alias_maps = proxy:sqlite:/etc/postfix/sqlite_virtual_mail_alias_maps.cf, proxy:sqlite:/etc/postfix/sqlite_virtual_domain_alias_maps.cf, proxy:sqlite:/etc/postfix/sqlite_virtual_domain_alias_catchall_maps.cf",
-    "virtual_mailbox_base = /var/vmail","virtual_uid_maps = static:5000","virtual_gid_maps = static:5000")}}
+    {{=UL("virtual_mailbox_domains=proxy:sqlite:/etc/postfix/sqlite_virtual_domains_maps.cf",
+    "virtual_mailbox_maps=proxy:sqlite:/etc/postfix/sqlite_virtual_mailbox_maps.cf, proxy:sqlite:/etc/postfix/sqlite_virtual_alias_domain_mailbox_maps.cf",
+    "virtual_alias_maps=proxy:sqlite:/etc/postfix/sqlite_virtual_mail_alias_maps.cf, proxy:sqlite:/etc/postfix/sqlite_virtual_domain_alias_maps.cf, proxy:sqlite:/etc/postfix/sqlite_virtual_domain_alias_catchall_maps.cf",
+    "virtual_mailbox_base=/var/vmail","virtual_uid_maps=static:5000","virtual_gid_maps=static:5000")}}
     {{=T("Virtual mailbox base can be set to the directory you feel better suited for this task. Uid and gid shall match that of the vmail user/group.")}}
 </li>
 <li>{{=T('Complete postfix configuration as needed.')}}

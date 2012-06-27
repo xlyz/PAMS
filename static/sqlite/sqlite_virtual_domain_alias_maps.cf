@@ -5,5 +5,5 @@
 # Path to sqlite db
 dbpath = /path/to/web2postfix/databases/storage.sqlite
 
-query = SELECT goto FROM mail_alias,domain_alias WHERE domain_alias.domain_alias = '%d' and mail_alias.address = ('%u'||'@'||domain_alias.domain_target) AND mail_alias.active = 1 AND domain_alias.active='1'
+query = SELECT goto FROM mail_alias,domain_alias WHERE domain_alias.domain_alias = '%d' and mail_alias.address = ('%u'||'@'||domain_alias.domain_target) AND mail_alias.active = 1 AND domain_alias.active='T'
 

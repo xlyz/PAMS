@@ -16,4 +16,4 @@ settings.quota = 1000
 '''
 
 # lambda function that returns the maildir 
-settings.maildir = lambda r: r['username']+'@'+r['domain']
+settings.maildir = lambda r: r['username']+'@'+r['domain']+'/'

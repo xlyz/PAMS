@@ -1,6 +1,6 @@
 
 
-Web2postfix is a lightweight web tool to manage virtual mail address with
+PAMS (Postfix Administration Made Simple) is a lightweight web tool to manage virtual mail address with
 postfix and dovecot.
 
 
@@ -18,14 +18,14 @@ alternatively in ubuntu: sudo aptitude install python-web2py
 (see http://www.web2py.com and http://web2py.com/books/default/chapter/29/3)
 
 
-* Install web2postfix
+* Install PAMS
 
-Copy web2postfix in web2py/applications directory
+Copy PAMS in web2py/applications directory
 
 
 * Launch web2py: python web2py/web2py.py
 
-* Visit http://127.0.0.1:8000/web2postfix
+* Visit http://127.0.0.1:8000/pams
   (change url and port to fit your need - see web2py.py --help for details)
 
 ------------

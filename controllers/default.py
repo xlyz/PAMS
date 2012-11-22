@@ -79,6 +79,13 @@ def data():
     
 @auth.requires_login()
 def domain():
+    deletable=False
+    try:
+        if request.args[0]=='edit':
+            db.domain.id.readable=False
+            deletable=True
+    except:
+        pass
     query=((db.domain))
     fields=(db.domain.id,db.domain.domain,
             db.domain.description,db.domain.backupmx,db.domain.active)
@@ -87,12 +94,13 @@ def domain():
     return dict(form=SQLFORM.grid(query=query,fields=fields,headers=headers,
          searchable=True,
          sortable=True,
-         deletable=True,
+         deletable=deletable,
          editable=True,
          details=True,
          create=True,
          csv=False,
          paginate=20,
+         links=[dict(header=T('Domain alias'), body=lambda row: DIV(str(request.args)+str(db(db.domain_alias.domain_target==row.domain).count('id'))+'/0'))],
          ))
 
 @auth.requires_login()
@@ -112,8 +120,12 @@ def domain_alias():
 
 @auth.requires_login()
 def mailbox():
+    if request.args and request.args[0]=='view':
+            db.mailbox.password.readable=False
+            db.mailbox.mail_address.readable=True
+            db.mailbox.maildir.readable=True
     query=((db.mailbox))
-    fields=(db.mailbox.id,db.mailbox.mail_address,db.mailbox.domain,db.mailbox.active)
+    fields=(db.mailbox.id,db.mailbox.mail_address,db.mailbox.maildir,db.mailbox.domain,db.mailbox.active)
     headers={
      }
     return dict(form=SQLFORM.grid(query=query,fields=fields,headers=headers,

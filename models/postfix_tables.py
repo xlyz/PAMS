@@ -11,6 +11,7 @@ db.define_table('domain',
     format = '%(domain)s',
     )
 
+
 ''' coming soon ...
 
     Field('maxaliases','integer', notnull=True, default=settings.maxaliases, 
@@ -32,6 +33,7 @@ db.define_table('domain_alias',
     Field('modified','datetime', notnull=True, update=request.now, writable=False),
     Field('active','boolean', notnull=True, default=True),
     )
+
 ''' sqlite index example    
 # this need to be modified in case mysql or pgsql is used
 db.executesql('CREATE UNIQUE INDEX IF NOT EXISTS domain_alias_idx ON domain_alias (domain_alias, domain_target);')

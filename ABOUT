@@ -1,6 +1,6 @@
 
 
-Web2postfix is a lightweight web tool to manage virtual mail address with
+PAMS (Postfix Administration Made Simple) is a lightweight web tool to manage virtual mail address with
 postfix and dovecot.
 
 It's an application for web2py.

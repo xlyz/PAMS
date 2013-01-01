@@ -1,0 +1,6 @@
+*.pyc
+*.sqlite
+*.log
+*.table
+sessions/*
+private/auth.key

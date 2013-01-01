@@ -23,7 +23,7 @@ db.define_table('domain',
     Field('maxquota','integer', notnull=True, default=0, 
           comment=T('in MB, 0: infinite'),
           label=T('Disk quota')),
-    Field('quota','integer', notnull=True, default=0, writable=False, readable=False),
+    Field('default_quota','integer', notnull=True, default=0, writable=False, readable=False),
 '''
     
 db.define_table('domain_alias',
@@ -45,6 +45,7 @@ db.define_table('mailbox',
     Field('mail_address','string', length=255, compute=lambda r: r['username']+'@'+r['domain']),
     Field('password','password', length=255, notnull=True,),
     Field('maildir','string', length=255, notnull=True, compute=settings.maildir),
+    Field('quota','integer', notnull=True, default=settings.quota),
     Field('created','datetime', notnull=True, default=request.now, writable=False),
     Field('modified','datetime', notnull=True, update=request.now, writable=False),
     Field('active','boolean', notnull=True, default=True),
@@ -57,9 +58,6 @@ def mail_passwd(form):
        salt = ''.join(random.choice('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') for i in range(8))
        form.vars.password = crypt.crypt(form.vars.password,'$6$'+salt+'$')
 
-''' coming soon ...
-    Field('quota','integer', notnull=True, default=settings.quota),
-'''
 db.define_table('mail_alias',
     Field('address','string', length=255, notnull=True, unique=True),
     Field('goto','text', notnull=True,),

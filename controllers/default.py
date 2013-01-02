@@ -87,8 +87,8 @@ def domain():
     except:
         pass
     query=((db.domain))
-    fields=(db.domain.id,db.domain.domain,
-            db.domain.description,db.domain.backupmx,db.domain.active)
+    fields=(db.domain.id,db.domain.domain,db.domain.description,db.domain.maxmailboxes,
+	db.domain.maxaliases,db.domain.active)
     headers={
      }
     return dict(form=SQLFORM.grid(query=query,fields=fields,headers=headers,
@@ -100,7 +100,6 @@ def domain():
          create=True,
          csv=False,
          paginate=20,
-         links=[dict(header=T('Domain alias'), body=lambda row: DIV(str(request.args)+str(db(db.domain_alias.domain_target==row.domain).count('id'))+'/0'))],
          ))
 
 @auth.requires_login()

@@ -3,6 +3,12 @@
 db.define_table('domain',
     Field('domain','string', length=255, notnull=True, unique=True,),
     Field('description','string', length=255,),
+    Field('maxaliases','integer', notnull=True, default=settings.maxaliases, 
+          comment=T('max # allowed; 0: infinite, -1: disable'),
+          label=T('Max aliases')),
+    Field('maxmailboxes','integer', notnull=True, default=settings.maxmailboxes, 
+          comment=T('max # allowed; 0: infinite, -1: disable'),
+          label=T('Max mailboxes')),
     Field('transport','string', notnull=True, default='virtual', writable=False, readable=False),
     Field('backupmx','boolean', notnull=True, default=False),
     Field('created','datetime', notnull=True, default=request.now, writable=False),
@@ -10,16 +16,11 @@ db.define_table('domain',
     Field('active','boolean', notnull=True, default=True),
     format = '%(domain)s',
     )
-
+db.domain.maxmailboxes.represent = lambda value,row: DIV(str(db(db.mailbox.domain==row.domain).count('id'))+'/'+str(row.maxmailboxes))
+db.domain.maxaliases.represent = lambda value,row: DIV(str(db(db.mail_alias.domain==row.domain).count('id'))+'/'+str(row.maxaliases))
 
 ''' coming soon ...
 
-    Field('maxaliases','integer', notnull=True, default=settings.maxaliases, 
-          comment=T('max # allowed; 0: infinite, -1: disable'),
-          label=T('Aliases')),
-    Field('maxmailboxes','integer', notnull=True, default=settings.maxmailboxes, 
-          comment=T('max # allowed; 0: infinite, -1: disable'),
-          label=T('Mailboxes')),
     Field('maxquota','integer', notnull=True, default=0, 
           comment=T('in MB, 0: infinite'),
           label=T('Disk quota')),
@@ -59,7 +60,9 @@ def mail_passwd(form):
        form.vars.password = crypt.crypt(form.vars.password,'$6$'+salt+'$')
 
 db.define_table('mail_alias',
-    Field('address','string', length=255, notnull=True, unique=True),
+    Field('username','string', length=255, notnull=True,),
+    Field('domain','string', length=255, notnull=True, requires=IS_IN_DB(db, 'domain.domain')),
+    Field('address','string', length=255, notnull=True, unique=True, compute=lambda r: r['username']+'@'+r['domain']),
     Field('goto','text', notnull=True,),
     Field('created','datetime', notnull=True, default=request.now, writable=False),
     Field('modified','datetime', notnull=True, update=request.now, writable=False),

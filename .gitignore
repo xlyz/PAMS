@@ -3,4 +3,5 @@
 *.log
 *.table
 sessions/*
+errors/*
 private/auth.key

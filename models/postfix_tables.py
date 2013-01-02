@@ -27,19 +27,6 @@ db.domain.maxaliases.represent = lambda value,row: DIV(str(db(db.mail_alias.doma
     Field('default_quota','integer', notnull=True, default=0, writable=False, readable=False),
 '''
     
-db.define_table('domain_alias',
-    Field('domain_alias','string', length=255, notnull=True, requires=IS_IN_DB(db, 'domain.domain')), # è necessario?
-    Field('domain_target','string', length=255, notnull=True, requires=IS_IN_DB(db, 'domain.domain')),
-    Field('created','datetime', notnull=True, default=request.now, writable=False),
-    Field('modified','datetime', notnull=True, update=request.now, writable=False),
-    Field('active','boolean', notnull=True, default=True),
-    )
-
-''' sqlite index example    
-# this need to be modified in case mysql or pgsql is used
-db.executesql('CREATE UNIQUE INDEX IF NOT EXISTS domain_alias_idx ON domain_alias (domain_alias, domain_target);')
-'''
-
 db.define_table('mailbox',
     Field('username','string', length=255, notnull=True,),
     Field('domain','string', length=255, notnull=True, requires=IS_IN_DB(db, 'domain.domain')),
@@ -58,6 +45,19 @@ def mail_passwd(form):
        import crypt, random
        salt = ''.join(random.choice('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') for i in range(8))
        form.vars.password = crypt.crypt(form.vars.password,'$6$'+salt+'$')
+
+db.define_table('domain_alias',
+    Field('domain_alias','string', length=255, notnull=True, requires=IS_IN_DB(db,'domain.domain')), # è necessario?
+    Field('domain_target','string', length=255, notnull=True, requires=IS_IN_DB(db,'mailbox.domain', distinct=True)),
+    Field('created','datetime', notnull=True, default=request.now, writable=False),
+    Field('modified','datetime', notnull=True, update=request.now, writable=False),
+    Field('active','boolean', notnull=True, default=True),
+    )
+
+''' sqlite index example    
+# this need to be modified in case mysql or pgsql is used
+db.executesql('CREATE UNIQUE INDEX IF NOT EXISTS domain_alias_idx ON domain_alias (domain_alias, domain_target);')
+'''
 
 db.define_table('mail_alias',
     Field('username','string', length=255, notnull=True,),

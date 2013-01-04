@@ -99,7 +99,7 @@ def domain():
       _href=URL('mail_alias',vars=dict(keywords='mail_alias.domain="'+row.domain+'"'))) \
       if row.type=='full' else '',
       lambda row: A('Manage target domain',\
-      _href=URL("domain_alias",vars=dict(keywords='mail_alias.domain="'+row.domain+'"'))) \
+      _href=URL("domain_alias",vars=dict(keywords='domain_alias.domain_alias="'+row.domain+'"'))) \
       if row.type=='alias' else '']
     try:
         if request.args[0]=='edit':
@@ -107,6 +107,7 @@ def domain():
             db.domain.maxmailboxes.represent = None
             db.domain.maxaliases.represent = None
             deletable=True
+            links = []
         elif request.args[0]=='view':
             db.domain.id.readable=False
             db.domain.maxmailboxes.represent = lambda value,row: \
@@ -159,25 +160,42 @@ def domain():
 
 @auth.requires_login()
 def domain_alias():
+    deletable=False
+    selected_domain = None
     try:
+        if request.vars.keywords:
+            import re
+            selected_domain = re.search(r'domain_alias\.domain_alias="([.a-z0-9]*)"',\
+              request.vars.keywords).group(1)
+        if request.args[0]=='view':
+            db.domain_alias.id.readable=False
         if request.args[0]=='edit':
             db.domain_alias.id.readable=False
             db.domain_alias.domain_alias.writable=False
             deletable=True
-        elif request.args[0]=='new':
+        if request.args[0]=='new':
             existing_alias = db()._select(db.domain_alias.domain_alias)
             db.domain_alias.domain_alias.requires=IS_IN_DB(db((db.domain.type=='alias')&(~db.domain.domain.belongs(existing_alias))),'domain.domain')
+            db.domain_alias.domain_alias.default = selected_domain
     except:
         pass
+    # ugly check
+    try:
+        test=request.args[0]
+    except:
+        if selected_domain != None:
+            target_not_exist = db(db.domain_alias.domain_alias==selected_domain).isempty()
+            if target_not_exist:
+              response.flash=T('No target domain has been set for this domain alias. Please add it.')
     query=((db.domain_alias))
     fields=(db.domain_alias.id,db.domain_alias.domain_alias,
             db.domain_alias.domain_target,db.domain_alias.active)
     return dict(form=SQLFORM.grid(query=query,fields=fields,
          searchable=True,
          sortable=True,
-         deletable=False,
          editable=True,
          create=True,
+         deletable=deletable,
          csv=False,
          paginate=20,
          ))

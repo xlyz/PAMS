@@ -123,19 +123,16 @@ def domain():
                 if ($('#domain_type').val()=='alias'){\
                         jQuery('#domain_maxaliases__row').hide();\
                         jQuery('#domain_maxmailboxes__row').hide();\
-                        jQuery('#domain_default_quota__row').hide();\
                         jQuery('#domain_maxquota__row').hide();\
                     };\
                 $('#domain_type').change(function(){\
                     if($('#domain_type').val()=='full'){\
                         jQuery('#domain_maxaliases__row').show('slow');\
                         jQuery('#domain_maxmailboxes__row').show('slow');\
-                        jQuery('#domain_default_quota__row').show('slow');\
                         jQuery('#domain_maxquota__row').show('slow');\
                     } else { \
                         jQuery('#domain_maxaliases__row').hide('slow');\
                         jQuery('#domain_maxmailboxes__row').hide('slow');\
-                        jQuery('#domain_default_quota__row').hide('slow');\
                         jQuery('#domain_maxquota__row').hide('slow');\
                 }})});")
     except:
@@ -202,6 +199,18 @@ def domain_alias():
 
 @auth.requires_login()
 def mailbox():
+    selected_domain = None
+    try:
+        if request.vars.keywords:
+            import re
+            selected_domain = re.search(r'mailbox\.domain="([.a-z0-9]*)"',\
+              request.vars.keywords).group(1)
+        if request.args[0]=='edit' or request.args[0]=='view':
+            db.mailbox.id.readable=False
+        elif request.args[0]=='new':
+            db.mailbox.domain.default = selected_domain
+    except:
+        pass
     if request.args and request.args[0]=='view':
             db.mailbox.password.readable=False
             db.mailbox.mail_address.readable=True

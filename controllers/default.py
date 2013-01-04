@@ -80,37 +80,97 @@ def data():
 @auth.requires_login()
 def domain():
     deletable=False
+    js=''
+    db.domain.maxmailboxes.represent = lambda value,row: \
+      SPAN(str(db(db.mailbox.domain==row.domain).count('id'))+'/'+str(row.maxmailboxes))+' '\
+      +A('Add',_href=URL('domain'),_title=T('add mail address'))+' '\
+      +A('List',_href=URL('domain'),_title=T('list mail address'))\
+       if row.type=='full' else '-'
+    db.domain.maxaliases.represent = lambda value,row: \
+      SPAN(str(db(db.mail_alias.domain==row.domain).count('id'))+'/'+str(row.maxaliases))+' '\
+      +A('Add',_href=URL('domain'),_title=T('add mail alias'))+' '\
+      +A('List',_href=URL('domain'),_title=T('list mail alias'))\
+       if row.type=='full' else '-'
+    links = []
     try:
         if request.args[0]=='edit':
             db.domain.id.readable=False
+            db.domain.maxmailboxes.represent = None
+            db.domain.maxaliases.represent = None
             deletable=True
+        elif request.args[0]=='view':
+            db.domain.id.readable=False
+            db.domain.maxmailboxes.represent = lambda value,row: \
+              SPAN(str(db(db.mailbox.domain==row.domain).count('id'))+'/'+str(row.maxmailboxes))+' '\
+               if row.type=='full' else '-'
+            db.domain.maxmailboxes.comment=T('existing mailboxes / max # allowed')
+            db.domain.maxaliases.represent = lambda value,row: \
+              SPAN(str(db(db.mail_alias.domain==row.domain).count('id'))+'/'+str(row.maxaliases))+' '\
+               if row.type=='full' else '-'
+            db.domain.maxaliases.comment=T('existing mail alias / max # allowed')
+        if request.args[0]=='edit' or request.args[0]=='new':
+            js=SCRIPT("$(document).ready(function(){\
+                if ($('#domain_type').val()=='alias'){\
+                        jQuery('#domain_maxaliases__row').hide();\
+                        jQuery('#domain_maxmailboxes__row').hide();\
+                        jQuery('#domain_default_quota__row').hide();\
+                        jQuery('#domain_maxquota__row').hide();\
+                    };\
+                $('#domain_type').change(function(){\
+                    if($('#domain_type').val()=='full'){\
+                        jQuery('#domain_maxaliases__row').show('slow');\
+                        jQuery('#domain_maxmailboxes__row').show('slow');\
+                        jQuery('#domain_default_quota__row').show('slow');\
+                        jQuery('#domain_maxquota__row').show('slow');\
+                    } else { \
+                        jQuery('#domain_maxaliases__row').hide('slow');\
+                        jQuery('#domain_maxmailboxes__row').hide('slow');\
+                        jQuery('#domain_default_quota__row').hide('slow');\
+                        jQuery('#domain_maxquota__row').hide('slow');\
+                }})});")
     except:
         pass
     query=((db.domain))
-    fields=(db.domain.id,db.domain.domain,db.domain.description,db.domain.maxmailboxes,
+    fields=(db.domain.id,db.domain.domain,db.domain.type,db.domain.maxmailboxes,
 	db.domain.maxaliases,db.domain.active)
-    headers={
-     }
-    return dict(form=SQLFORM.grid(query=query,fields=fields,headers=headers,
-         searchable=True,
-         sortable=True,
-         deletable=deletable,
-         editable=True,
-         details=True,
-         create=True,
-         csv=False,
-         paginate=20,
-         ))
+    headers={}
+
+    return dict(
+        form=SQLFORM.grid(query=query,
+#          left=db.domain.on(db.domain_alias.domain_alias==db.domain.domain),
+          fields=fields,
+          headers=headers,
+          links=links,
+          searchable=True,
+          sortable=True,
+          deletable=deletable,
+          editable=True,
+          details=True,
+          create=True,
+          csv=False,
+          paginate=20,
+          ),
+        js=js)
 
 @auth.requires_login()
 def domain_alias():
+    try:
+        if request.args[0]=='edit':
+            db.domain_alias.id.readable=False
+            db.domain_alias.domain_alias.writable=False
+            deletable=True
+        elif request.args[0]=='new':
+            existing_alias = db()._select(db.domain_alias.domain_alias)
+            db.domain_alias.domain_alias.requires=IS_IN_DB(db((db.domain.type=='alias')&(~db.domain.domain.belongs(existing_alias))),'domain.domain')
+    except:
+        pass
     query=((db.domain_alias))
     fields=(db.domain_alias.id,db.domain_alias.domain_alias,
             db.domain_alias.domain_target,db.domain_alias.active)
     return dict(form=SQLFORM.grid(query=query,fields=fields,
          searchable=True,
          sortable=True,
-         deletable=True,
+         deletable=False,
          editable=True,
          create=True,
          csv=False,

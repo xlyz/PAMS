@@ -3,12 +3,17 @@
 db.define_table('domain',
     Field('domain','string', length=255, notnull=True, unique=True,),
     Field('description','string', length=255,),
+    Field('type', 'string',notnull=True,requires=IS_IN_SET(['full','alias'])),
     Field('maxaliases','integer', notnull=True, default=settings.maxaliases, 
           comment=T('max # allowed; 0: infinite, -1: disable'),
-          label=T('Max aliases')),
+          label=T('Aliases')),
     Field('maxmailboxes','integer', notnull=True, default=settings.maxmailboxes, 
           comment=T('max # allowed; 0: infinite, -1: disable'),
-          label=T('Max mailboxes')),
+          label=T('Mailboxes')),
+    Field('default_quota','integer', notnull=True, default=settings.quota,
+          comment=T('in MB, 0: infinite'), label=T('Disk default quota')),
+    Field('maxquota','integer', notnull=True, default=0, comment=T('in MB, 0: infinite'),
+          label=T('Disk max quota')),
     Field('transport','string', notnull=True, default='virtual', writable=False, readable=False),
     Field('backupmx','boolean', notnull=True, default=False),
     Field('created','datetime', notnull=True, default=request.now, writable=False),
@@ -16,16 +21,6 @@ db.define_table('domain',
     Field('active','boolean', notnull=True, default=True),
     format = '%(domain)s',
     )
-db.domain.maxmailboxes.represent = lambda value,row: DIV(str(db(db.mailbox.domain==row.domain).count('id'))+'/'+str(row.maxmailboxes))
-db.domain.maxaliases.represent = lambda value,row: DIV(str(db(db.mail_alias.domain==row.domain).count('id'))+'/'+str(row.maxaliases))
-
-''' coming soon ...
-
-    Field('maxquota','integer', notnull=True, default=0, 
-          comment=T('in MB, 0: infinite'),
-          label=T('Disk quota')),
-    Field('default_quota','integer', notnull=True, default=0, writable=False, readable=False),
-'''
     
 db.define_table('mailbox',
     Field('username','string', length=255, notnull=True,),
@@ -47,8 +42,8 @@ def mail_passwd(form):
        form.vars.password = crypt.crypt(form.vars.password,'$6$'+salt+'$')
 
 db.define_table('domain_alias',
-    Field('domain_alias','string', length=255, notnull=True, requires=IS_IN_DB(db,'domain.domain')), # è necessario?
-    Field('domain_target','string', length=255, notnull=True, requires=IS_IN_DB(db,'mailbox.domain', distinct=True)),
+    Field('domain_alias','string', length=255, notnull=True, unique=True,requires=IS_IN_DB(db((db.domain.type=='alias')),'domain.domain')),
+    Field('domain_target','string', length=255, notnull=True, requires=IS_IN_DB(db(db.domain.type=='full'),'domain.domain')),
     Field('created','datetime', notnull=True, default=request.now, writable=False),
     Field('modified','datetime', notnull=True, update=request.now, writable=False),
     Field('active','boolean', notnull=True, default=True),

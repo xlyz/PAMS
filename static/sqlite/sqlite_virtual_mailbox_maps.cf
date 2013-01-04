@@ -3,7 +3,7 @@
 #
 
 # Path to sqlite db
-dbpath = /path/to/web2postfix/databases/storage.sqlite
+dbpath = /path/to/PAMS/databases/storage.sqlite
 
 query = SELECT maildir FROM mailbox WHERE mail_address='%s' AND active = 'T'
 

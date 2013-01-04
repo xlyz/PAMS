@@ -5,7 +5,7 @@
 driver = sqlite
 
 # Connect to sqlite db
-connect = /path/to/web2postfix/databases/storage.sqlite
+connect = /path/to/PAMS/databases/storage.sqlite
 
 # Default password scheme - list of supported schemes is in:
 # http://wiki2.dovecot.org/Authentication/PasswordSchemes

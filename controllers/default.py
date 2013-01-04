@@ -82,16 +82,25 @@ def domain():
     deletable=False
     js=''
     db.domain.maxmailboxes.represent = lambda value,row: \
-      SPAN(SPAN(str(db(db.mailbox.domain==row.domain).count('id'))+'/'+str(row.maxmailboxes))+' '\
-      +A('Manage',_href=URL('mailbox',vars=dict(keywords='mailbox.domain="'+row.domain+'"')),\
-      _title=T('manage mail address')), _class='row_buttons')\
-       if row.type=='full' else '-'
+      SPAN(str(db(db.mailbox.domain==row.domain).count('id'))+'/'+str(row.maxmailboxes))+' ' \
+      if row.type=='full' else '-'
     db.domain.maxaliases.represent = lambda value,row: \
-      SPAN(SPAN(str(db(db.mail_alias.domain==row.domain).count('id'))+'/'+str(row.maxaliases))+' '\
-      +A('Manage',_href=URL('mail_alias',vars=dict(keywords='mail_alias.domain="'+row.domain+'"')),\
-      _title=T('manage mail alias')), _class='row_buttons')\
-       if row.type=='full' else '-'
-    links = []
+      SPAN(str(db(db.mail_alias.domain==row.domain).count('id'))+'/'+str(row.maxaliases))+' ' \
+      if row.type=='full' else '-'
+    query=((db.domain))
+    fields=(db.domain.id,db.domain.domain,db.domain.type,db.domain.maxmailboxes,\
+    	db.domain.maxaliases,db.domain.active)
+    headers={}
+    links = [\
+      lambda row: A('Manage mailboxes',\
+      _href=URL('mailbox',vars=dict(keywords='mailbox.domain="'+row.domain+'"'))) \
+      if row.type=='full' else '',
+      lambda row: A('Manage mail alias',\
+      _href=URL('mail_alias',vars=dict(keywords='mail_alias.domain="'+row.domain+'"'))) \
+      if row.type=='full' else '',
+      lambda row: A('Manage target domain',\
+      _href=URL("domain_alias",vars=dict(keywords='mail_alias.domain="'+row.domain+'"'))) \
+      if row.type=='alias' else '']
     try:
         if request.args[0]=='edit':
             db.domain.id.readable=False
@@ -130,10 +139,6 @@ def domain():
                 }})});")
     except:
         pass
-    query=((db.domain))
-    fields=(db.domain.id,db.domain.domain,db.domain.type,db.domain.maxmailboxes,
-	db.domain.maxaliases,db.domain.active)
-    headers={}
 
     return dict(
         form=SQLFORM.grid(query=query,

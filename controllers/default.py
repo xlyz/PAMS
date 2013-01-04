@@ -224,6 +224,18 @@ def mailbox():
 
 @auth.requires_login()
 def mail_alias():
+    selected_domain = None
+    try:
+        if request.vars.keywords:
+            import re
+            selected_domain = re.search(r'mail_alias\.domain="([.a-z0-9]*)"',\
+              request.vars.keywords).group(1)
+        if request.args[0]=='edit' or request.args[0]=='view':
+            db.mail_alias.id.readable=False
+        elif request.args[0]=='new':
+            db.mail_alias.domain.default = selected_domain
+    except:
+        pass
     query=((db.mail_alias))
     fields=(db.mail_alias.id,db.mail_alias.address,db.mail_alias.active)
     headers={

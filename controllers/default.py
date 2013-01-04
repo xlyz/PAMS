@@ -87,10 +87,11 @@ def domain():
     db.domain.maxaliases.represent = lambda value,row: \
       SPAN(str(db(db.mail_alias.domain==row.domain).count('id'))+'/'+str(row.maxaliases))+' ' \
       if row.type=='full' else '-'
+    db.domain.maxquota.represent = lambda value,row: SPAN(str(row.maxquota)) if row.type=='full' else '-'
     query=((db.domain))
     fields=(db.domain.id,db.domain.domain,db.domain.type,db.domain.maxmailboxes,\
-    	db.domain.maxaliases,db.domain.active)
-    headers={}
+    	db.domain.maxaliases,db.domain.maxquota,db.domain.active)
+    headers={'domain.maxquota':'Max quota'}
     links = [\
       lambda row: A('Manage mailboxes',\
       _href=URL('mailbox',vars=dict(keywords='mailbox.domain="'+row.domain+'"'))) \
@@ -207,8 +208,10 @@ def mailbox():
               request.vars.keywords).group(1)
         if request.args[0]=='edit' or request.args[0]=='view':
             db.mailbox.id.readable=False
+            db.mailbox.domain.comment=T('After each domain its max quota is diplayed')
         elif request.args[0]=='new':
             db.mailbox.domain.default = selected_domain
+            db.mailbox.domain.comment=T('After each domain its max quota is diplayed')
     except:
         pass
     if request.args and request.args[0]=='view':

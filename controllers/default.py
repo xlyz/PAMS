@@ -107,9 +107,22 @@ def domain():
             db.domain.id.readable=False
             db.domain.maxmailboxes.represent = None
             db.domain.maxaliases.represent = None
-            deletable=True
-            links = []
-        elif request.args[0]=='view':
+            this_row = db(db.domain.id == request.args[2]).select().first()
+            if this_row.type == 'full':
+                mailbox_number = db(db.mailbox.domain==this_row.domain).count('id')
+                mailalias_number = db(db.mail_alias.domain==this_row.domain).count('id')
+                domain_target_number = db(db.domain_alias.domain_target==this_row.domain).count('id')
+                if (mailbox_number + mailalias_number + domain_target_number) > 0:
+                    links.append(lambda row: P(CAT(T('This domain has %(mb)s mailboxes and %(ma)s mail aliases, and is targeted by %(dt)s domain alias.',dict(mb=mailbox_number,ma=mailalias_number,dt=domain_target_number)),BR(),T('To be able to delete this domain you need to remove all of them.'))))
+                else:
+                    deletable=True
+            else:
+                domain_alias_number = db(db.domain_alias.domain_alias==this_row.domain).count('id')
+                if (domain_alias_number) > 0:
+                    links.append(lambda row: P(T('To delete this domain you need to remove its domain alias')))
+                else:
+                    deletable=True
+        if request.args[0]=='view':
             db.domain.id.readable=False
             db.domain.maxmailboxes.represent = lambda value,row: \
               SPAN(str(db(db.mailbox.domain==row.domain).count('id'))+'/'+str(row.maxmailboxes))+' '\
@@ -158,7 +171,6 @@ def domain():
 
 @auth.requires_login()
 def domain_alias():
-    deletable=False
     selected_domain = None
     try:
         if request.vars.keywords:
@@ -193,8 +205,7 @@ def domain_alias():
          sortable=True,
          editable=True,
          create=True,
-         deletable=deletable,
-         csv=False,
+          csv=False,
          paginate=20,
          ))
 

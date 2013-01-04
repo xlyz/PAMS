@@ -82,14 +82,14 @@ def domain():
     deletable=False
     js=''
     db.domain.maxmailboxes.represent = lambda value,row: \
-      SPAN(str(db(db.mailbox.domain==row.domain).count('id'))+'/'+str(row.maxmailboxes))+' '\
-      +A('Add',_href=URL('domain'),_title=T('add mail address'))+' '\
-      +A('List',_href=URL('domain'),_title=T('list mail address'))\
+      SPAN(SPAN(str(db(db.mailbox.domain==row.domain).count('id'))+'/'+str(row.maxmailboxes))+' '\
+      +A('Manage',_href=URL('mailbox',vars=dict(keywords='mailbox.domain="'+row.domain+'"')),\
+      _title=T('manage mail address')), _class='row_buttons')\
        if row.type=='full' else '-'
     db.domain.maxaliases.represent = lambda value,row: \
-      SPAN(str(db(db.mail_alias.domain==row.domain).count('id'))+'/'+str(row.maxaliases))+' '\
-      +A('Add',_href=URL('domain'),_title=T('add mail alias'))+' '\
-      +A('List',_href=URL('domain'),_title=T('list mail alias'))\
+      SPAN(SPAN(str(db(db.mail_alias.domain==row.domain).count('id'))+'/'+str(row.maxaliases))+' '\
+      +A('Manage',_href=URL('mail_alias',vars=dict(keywords='mail_alias.domain="'+row.domain+'"')),\
+      _title=T('manage mail alias')), _class='row_buttons')\
        if row.type=='full' else '-'
     links = []
     try:

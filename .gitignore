@@ -1,8 +1,1 @@
 *.pyc
-*.sqlite
-*.log
-*.table
-cache/*
-sessions/*
-errors/*
-private/auth.key

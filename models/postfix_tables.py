@@ -24,7 +24,7 @@ db.define_table('domain',
     
 db.define_table('mailbox',
     Field('username','string', length=255, notnull=True,),
-    Field('domain','string', length=255, notnull=True, requires=IS_IN_DB(db, 'domain.domain')),
+    Field('domain','string', length=255, notnull=True, requires=IS_IN_DB(db(db.domain.type=='full'), 'domain.domain')),
     Field('mail_address','string', length=255, compute=lambda r: r['username']+'@'+r['domain']),
     Field('password','password', length=255, notnull=True,),
     Field('maildir','string', length=255, notnull=True, compute=settings.maildir),
@@ -56,7 +56,7 @@ db.executesql('CREATE UNIQUE INDEX IF NOT EXISTS domain_alias_idx ON domain_alia
 
 db.define_table('mail_alias',
     Field('username','string', length=255, notnull=True,),
-    Field('domain','string', length=255, notnull=True, requires=IS_IN_DB(db, 'domain.domain')),
+    Field('domain','string', length=255, notnull=True, requires=IS_IN_DB(db(db.domain.type=='full'), 'domain.domain')),
     Field('address','string', length=255, notnull=True, unique=True, compute=lambda r: r['username']+'@'+r['domain']),
     Field('goto','text', notnull=True,),
     Field('created','datetime', notnull=True, default=request.now, writable=False),

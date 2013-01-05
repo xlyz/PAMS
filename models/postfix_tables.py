@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
 db.define_table('domain',
-    Field('domain','string', length=255, notnull=True, unique=True,),
+    Field('domain','string', length=255, notnull=True, unique=True,\
+      requires = [IS_MATCH('^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$','Domain not valid.'),\
+      IS_NOT_IN_DB(db, 'domain.domain')]),
     Field('description','string', length=255,),
     Field('type', 'string',notnull=True,requires=IS_IN_SET(['full','alias'])),
     Field('maxaliases','integer', notnull=True, default=settings.maxaliases, 
@@ -21,7 +23,7 @@ db.define_table('domain',
     )
     
 db.define_table('mailbox',
-    Field('username','string', length=255, notnull=True,),
+    Field('username','string', length=255, notnull=True),
     Field('domain','string', length=255, notnull=True, requires=IS_IN_DB(db(db.domain.type=='full'), 'domain.domain', '%(domain)s --> %(maxquota)s')),
     Field('mail_address','string', unique=True, length=255, compute=lambda row: row['username']+'@'+row['domain']),
     Field('password','password', length=255, notnull=True,),
@@ -31,7 +33,6 @@ db.define_table('mailbox',
     Field('modified','datetime', notnull=True, update=request.now, writable=False),
     Field('active','boolean', notnull=True, default=True),
     )
-db.mailbox.username.requires=IS_NOT_IN_DB(db(db.mailbox.domain==request.vars.domain), 'mailbox.username', error_message=T('this mail address is already present'))
 
 def mail_passwd(form):
     if form.vars.password:
@@ -61,6 +62,11 @@ db.define_table('mail_alias',
     Field('modified','datetime', notnull=True, update=request.now, writable=False),
     Field('active','boolean', notnull=True, default=True),
     )
+
+db.mailbox.username.requires=[IS_MATCH('^[a-zA-Z0-9._-]+$','Username not valid. Allowed characters: a-z A-Z 0-9 ._-'),IS_NOT_IN_DB(db(db.mailbox.domain==request.vars.domain), 'mailbox.username', error_message=T('a mailbox with this address is already present')),IS_NOT_IN_DB(db(db.mail_alias.domain==request.vars.domain), 'mail_alias.username', error_message=T('a mail alias with this address is already present'))]
+
+db.mail_alias.username.requires=[IS_MATCH('^[a-zA-Z0-9._-]+$','Username not valid. Allowed characters: a-z A-Z 0-9 ._-'),IS_NOT_IN_DB(db(db.mailbox.domain==request.vars.domain), 'mailbox.username', error_message=T('a mailbox with this address is already present')),IS_NOT_IN_DB(db(db.mail_alias.domain==request.vars.domain), 'mail_alias.username', error_message=T('a mail alias with this address is already present'))]
+
 
 ''' coming soon...
 db.define_table('quota',

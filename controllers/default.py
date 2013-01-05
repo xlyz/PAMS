@@ -6,6 +6,7 @@
 ## - download is for downloading files uploaded in the db (does streaming)
 ## - call exposes all registered services (none by default)
 #########################################################################
+import re
 
 def index():
     title= T('Wellcome to web2postfix')
@@ -174,7 +175,6 @@ def domain_alias():
     selected_domain = None
     try:
         if request.vars.keywords:
-            import re
             selected_domain = re.search(r'domain_alias\.domain_alias="([.a-z0-9]*)"',\
               request.vars.keywords).group(1)
         if request.args[0]=='view':
@@ -241,9 +241,18 @@ def mailbox():
          details=True,
          create=True,
          csv=False,
-         onvalidation=mail_passwd,
+         onvalidation=[mailbox_validate,mail_passwd],
          paginate=20,
          ))
+
+def mailbox_validate(form):
+    domain_settings = db(db.domain.domain==form.vars.domain).select().first()
+    if domain_settings.maxmailboxes == 0:
+        return
+    mailbox_number = db(db.mailbox.domain==form.vars.domain).count('id')
+    if mailbox_number >= domain_settings.maxmailboxes:
+        form.errors.domain = T('You can not add further mailbox: max number has already been reached.')
+
 
 @auth.requires_login()
 def mail_alias():
@@ -257,6 +266,7 @@ def mail_alias():
             db.mail_alias.id.readable=False
         elif request.args[0]=='new':
             db.mail_alias.domain.default = selected_domain
+            db.mail_alias.goto.comment = T('Comma separated list of emails.')
     except:
         pass
     query=((db.mail_alias))
@@ -270,9 +280,26 @@ def mail_alias():
          editable=True,
          details=True,
          create=True,
+         onvalidation=[mailalias_validate,goto_validate],
          csv=False,
          paginate=20,
          ))
+         
+def mailalias_validate(form):
+    domain_settings = db(db.domain.domain==form.vars.domain).select().first()
+    if domain_settings.maxaliases == 0:
+        return
+    mailalias_number = db(db.mail_alias.domain==form.vars.domain).count('id')
+    if mailalias_number >= domain_settings.maxaliases:
+        form.errors.domain = T('You can not add further mail alias: max number has already been reached.')
+
+def goto_validate(form):
+    goto_list = [x.strip() for x in form.vars.goto.split(',')]
+    for g in goto_list:
+        match = re.search('^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$',g, re.I)
+        if match==None:
+            form.errors.goto = T('Please check the goto mail address. Some are not valid.') + g
+    form.vars.goto = ','.join(goto_list)
 
 @auth.requires_login()
 def admin():
